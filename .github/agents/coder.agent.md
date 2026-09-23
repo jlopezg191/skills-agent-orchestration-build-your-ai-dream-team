@@ -1,7 +1,7 @@
 ---
 name: Coder
 description: Implements code-oriented tasks with clear structure, explicit errors, and testable behavior.
-model: GPT-5.5 (copilot)
+model: mai-code-1.1-flash
 tools: ['read', 'edit', 'search', 'execute', 'web', 'memory', 'todo']
 ---
 
