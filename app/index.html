@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Pulse</title>
+  <meta name="description" content="A contributor-friendly overview of Mona's active projects.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="dashboard dashboard-header">
+      <p class="eyebrow">Team workspace</p>
+      <h1>Project Pulse</h1>
+      <p class="intro">A clear view of what Mona's contributors are moving forward today.</p>
+    </div>
+  </header>
+
+  <main class="dashboard" id="main-content">
+    <section class="projects-section" aria-labelledby="projects-heading">
+      <div class="section-heading">
+        <h2 id="projects-heading">Active projects</h2>
+        <p id="projects-description">Review ownership, progress, recent activity, and priority at a glance.</p>
+      </div>
+      <div id="dashboard-status" class="dashboard-status" role="status" aria-live="polite">
+        <p>Loading project data...</p>
+      </div>
+      <div id="project-list" class="project-list" aria-describedby="projects-description"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="dashboard">
+      <p>Project Pulse helps contributors find the next useful action.</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const projectList = document.getElementById('project-list');
+      const dashboardStatus = document.getElementById('dashboard-status');
+      const requiredFields = ['name', 'owner', 'status', 'recentActivity', 'priority'];
+
+      function showState(message, stateClass) {
+        dashboardStatus.className = `dashboard-status ${stateClass}`;
+        dashboardStatus.textContent = '';
+        const paragraph = document.createElement('p');
+        paragraph.textContent = message;
+        dashboardStatus.appendChild(paragraph);
+      }
+
+      function hasRequiredData(project) {
+        return project && typeof project === 'object' && requiredFields.every((field) => {
+          return typeof project[field] === 'string' && project[field].trim().length > 0;
+        });
+      }
+
+      function createField(label, value, className) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `project-field ${className}`;
+        const labelElement = document.createElement('dt');
+        labelElement.textContent = label;
+        const valueElement = document.createElement('dd');
+        valueElement.textContent = value;
+        wrapper.append(labelElement, valueElement);
+        return wrapper;
+      }
+
+      function createProjectCard(project) {
+        const article = document.createElement('article');
+        article.className = 'project-card';
+
+        const heading = document.createElement('h3');
+        heading.className = 'project-name';
+        heading.textContent = project.name;
+
+        const details = document.createElement('dl');
+        details.className = 'project-details';
+        details.append(
+          createField('Owner', project.owner, 'project-owner'),
+          createField('Status', project.status, 'project-status'),
+          createField('Recent activity', project.recentActivity, 'project-activity'),
+          createField('Priority', project.priority, 'project-priority')
+        );
+
+        article.append(heading, details);
+        return article;
+      }
+
+      function renderProjects(projects) {
+        projectList.replaceChildren();
+        const cards = projects.map(createProjectCard);
+        projectList.append(...cards);
+        showState(`${projects.length} project${projects.length === 1 ? '' : 's'} loaded.`, 'is-success');
+      }
+
+      fetch('project-data.json', { headers: { Accept: 'application/json' } })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Project data request failed with status ${response.status}.`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data || !Array.isArray(data.projects)) {
+            showState('Project data is invalid: the response must contain a projects array.', 'is-error');
+            return;
+          }
+          if (data.projects.length === 0) {
+            showState('No projects are available yet.', 'is-empty');
+            return;
+          }
+          if (data.projects.some((project) => !hasRequiredData(project))) {
+            showState('Project data is invalid: every project needs a non-empty name, owner, status, recentActivity, and priority.', 'is-error');
+            return;
+          }
+          renderProjects(data.projects);
+        })
+        .catch((error) => {
+          projectList.replaceChildren();
+          showState(`Unable to load project data. ${error.message}`, 'is-error');
+        });
+    })();
+  </script>
+</body>
+</html>

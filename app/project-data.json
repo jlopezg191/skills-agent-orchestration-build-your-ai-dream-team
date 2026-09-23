@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Patel",
+      "status": "In progress",
+      "recentActivity": "Published the first draft of the welcome checklist and requested review from three contributors.",
+      "priority": "High"
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Alex Rivera",
+      "status": "At risk",
+      "recentActivity": "Resolved the button contrast audit and is waiting on the final token migration estimate.",
+      "priority": "Critical"
+    },
+    {
+      "name": "Release Notes Automation",
+      "owner": "Priya Shah",
+      "status": "On track",
+      "recentActivity": "Connected pull request labels to the release-notes preview and opened a testing follow-up.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Community Feedback Hub",
+      "owner": "Jordan Lee",
+      "status": "Planning",
+      "recentActivity": "Grouped the latest survey responses into themes for the next contributor planning session.",
+      "priority": "Low"
+    }
+  ]
+}
